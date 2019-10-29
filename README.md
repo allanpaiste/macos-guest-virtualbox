@@ -49,3 +49,46 @@ When the installation of Virtual Box fails, then refer to this guide to solve it
 * Open "General" tab
 * Click on "Allow" that is presented next to the 'System software from developer "Oracle America, Inc"' was blocked
   from loading. 
+
+## Remote Login
+
+If you want the terminal of the remote machine to be available from the HOST machine, some additional manual steps have
+to be taken.
+
+This guide assumes that the admin user in the system was named 'mojave'. If you used other user name, use yours instead.   
+
+### Allow Remote Login
+
+This can be done within the VM by doing the following: 
+
+* [Apple] > System Preferences > Sharing > Remote Login
+
+### Update VM configuration
+
+1. Open VirtualBox
+2. select the VM that has MacOS installed on it
+3. choose to edit its Settings
+4. choose Network tab
+5. open Advanced section on that tab
+6. open Port Forwarding
+7. Configure the following:
+
+```txt
+Name: SSH
+Protocol: TCP
+Host IP: 127.0.0.1
+Host Port: 2200
+Guest IP: 10.0.2.15
+Guest Port: 22
+```
+
+You might also consider configuring port-forwarding for web:  
+
+```txt
+Name: HTTP
+Protocol: TCP
+Host IP: 127.0.0.1
+Host Port: 8000
+Guest IP: 10.0.2.15
+Guest Port: 80
+```
