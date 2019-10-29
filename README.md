@@ -24,9 +24,28 @@ After successfully creating a working macOS virtual machine, consider importing 
 
 ## Dependencies
 
-* [VirtualBox](https://www.virtualbox.org/wiki/Downloads)≥6.0 with Extension Pack
+* [VirtualBox](https://www.virtualbox.org/wiki/Downloads)≥6.0 **with Extension Pack**
 * `Bash`≥4 (GNU variant; run on Windows through [Cygwin](https://cygwin.com/install.html) or WSL)
 * `coreutils` (GNU variant; install through package manager)
 * `unzip` (install through package manager)
 * `wget` (install through package manager)
 * `dmg2img` (install through package manager on Linux, macOS, or WSL; let the script download it automatically on Cygwin)
+
+## Dependencies with brew
+
+Most of the dependencies can be installed with HomeBrew
+
+```shell
+brew install wget
+brew install coreutils
+brew install unzip
+brew install dmg2img
+```
+
+When the installation of Virtual Box fails, then refer to this guide to solve it:
+
+* Open [Apple Icon] >> System Preferences
+* Open Security & Privacy
+* Open "General" tab
+* Click on "Allow" that is presented next to the 'System software from developer "Oracle America, Inc"' was blocked
+  from loading. 

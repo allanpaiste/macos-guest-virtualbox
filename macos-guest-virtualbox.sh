@@ -291,11 +291,12 @@ Press a key to select the macOS version to install on the virtual machine:'"${de
 '
 read -n 1 -p " [H/M/C] " macOS_release_name 2>/dev/tty
 echo ""
-if [ "${macOS_release_name^^}" == "H" ]; then
+macOS_release_name=$(echo ${macOS_release_name}|tr '[:lower:]' '[:upper:]')
+if [ "${macOS_release_name}" == "H" ]; then
     macOS_release_name="HighSierra"
     CFBundleShortVersionString="10.13"
     sucatalog="${HighSierra_sucatalog}"
-elif [ "${macOS_release_name^^}" == "M" ]; then
+elif [ "${macOS_release_name}" == "M" ]; then
     macOS_release_name="Mojave"
     CFBundleShortVersionString="10.14"
     sucatalog="${Mojave_sucatalog}"
@@ -315,7 +316,7 @@ if [ -n "$(VBoxManage showvminfo "${vmname}" 2>/dev/null)" ]; then
     delete=""
     read -n 1 -p " [y/n] " delete 2>/dev/tty
     echo ""
-    if [ "${delete,,}" == "y" ]; then
+    if [ "$(echo ${delete}|tr '[:upper:]' '[:lower:]')" == "y" ]; then
         VBoxManage unregistervm "${vmname}" --delete
     else
         printf '
@@ -573,7 +574,8 @@ VBoxManage setextradata "${vmname}" \
 # Virtualbox Mac scancodes found here:
 # https://wiki.osdev.org/PS/2_Keyboard#Scan_Code_Set_1
 # First half of hex code - press, second half - release, unless otherwise specified
-declare -A ksc=(
+#declare -A ksc=(
+ksc=$(cat <<-EOF
     ["ESC"]="01 81"
     ["1"]="02 82"
     ["2"]="03 83"
@@ -615,7 +617,7 @@ declare -A ksc=(
     ["l"]="26 A6"
     [";"]="27 A7"
     ["'"]="28 A8"
-    ['`']="29 A9"
+    ["\`"]="29 A9"
     ["LSHIFTprs"]="2A"
     ["LSHIFTrls"]="AA"
     ['\']="2B AB"
@@ -706,7 +708,48 @@ declare -A ksc=(
     ["<"]="2A 33 B3 AA"
     [">"]="2A 34 B4 AA"
     ["?"]="2A 35 B5 AA"
+EOF
 )
+#)
+
+function ksc_dictionary_normalize() {
+    echo "${@}" \
+      |sed -e 's/^[ \t]*//g' \
+      |sed 's/\(.*\)\[.\(.*\).\]\(.*\)="\(.*\)".*/\1\2\3=\4/g' \
+      |grep -v '^#'
+}
+
+function ksc_dictionary_get_value() {
+  local key=${1}
+
+  if [ "${key}" == "[" ] ; then
+    key="\["
+  fi
+
+  if [ "${key}" == '\' ] ; then
+    key='\\'
+  fi
+
+  if [ "${key}" == '.' ] ; then
+    key='\.'
+  fi
+
+  if [ "${key}" == '=' ] ; then
+    key='\='
+  fi
+
+  if [ "${key}" == '*' ] ; then
+    key='\*'
+  fi
+
+  if [ "${key}" == '' ] ; then
+    key='\ '
+  fi
+
+  echo "${ksc}"|grep "^${key}="|rev|cut -d= -f1|rev
+}
+
+ksc=$(ksc_dictionary_normalize "${ksc}")
 
 # hacky way to clear input buffer before sending scancodes
 function clear_input_buffer() {
@@ -715,9 +758,14 @@ function clear_input_buffer() {
 
 # read variable kbstring and convert string to scancodes and send to guest vm
 function send_keys() {
+    set -o noglob
+
     scancode=$(for (( i=0; i < ${#kbstring}; i++ ));
-               do c[i]=${kbstring:i:1}; echo -n ${ksc[${c[i]}]}" "; done)
-    scancode="${scancode} ${ksc['ENTER']}"
+               do c[i]=${kbstring:i:1}; echo -n $(ksc_dictionary_get_value ${c[i]})" "; done)
+    scancode="${scancode} $(ksc_dictionary_get_value 'ENTER')"
+
+    set +o noglob
+
     clear_input_buffer
     VBoxManage controlvm "${vmname}" keyboardputscancode ${scancode}
 }
@@ -727,7 +775,7 @@ function send_keys() {
 function send_special() {
     scancode=""
     for keypress in ${kbspecial}; do
-        scancode="${scancode}${ksc[${keypress}]}"" "
+        scancode="${scancode}$(ksc_dictionary_get_value ${keypress})"" "
     done
     clear_input_buffer
     VBoxManage controlvm "${vmname}" keyboardputscancode ${scancode}
@@ -918,7 +966,8 @@ printf 'Temporary files are safe to delete. '"${white_on_red}"'Delete temporary 
 delete=""
 read -n 1 -p " [y/n] " delete 2>/dev/tty
 echo ""
-if [ "${delete,,}" == "y" ]; then
+
+if [ "$(echo ${delete}|tr '[:upper:]' '[:lower:]')" == "y" ]; then
     rm "${macOS_release_name}_"* \
        "Install ${macOS_release_name}.vdi" \
        "ApfsDriverLoader.efi" "AppleImageLoader.efi" \
@@ -979,7 +1028,7 @@ Available stage titles:
 }
 
 if [ -z "${1}" ]; then
-    check_bash_version
+    #check_bash_version
     set_variables
     welcome
     check_dependencies
@@ -1000,7 +1049,7 @@ if [ -z "${1}" ]; then
     boot_macos_and_clean_up
 else
     if [ "${1}" != "stages" ]; then
-        check_bash_version
+        #check_bash_version
         set_variables
         check_dependencies
         for argument in "$@"; do ${argument}; done
