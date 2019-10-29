@@ -1,0 +1,16 @@
+.idea/
+ApfsDriverLoader.efi
+AppleImageLoader.efi
+AppleSupport-v2.0.4-RELEASE.zip
+AppleUiSupport.efi
+Install Mojave.vdi
+Mojave_AppleDiagnostics.chunklist
+Mojave_AppleDiagnostics.dmg
+Mojave_BaseSystem.chunklist
+Mojave_BaseSystem.dmg
+Mojave_BaseSystem.vdi
+Mojave_InstallESD*
+Mojave_InstallInfo.plist
+Mojave_installation_files.viso
+macOS.vdi
+startup.nsh

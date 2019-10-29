@@ -42,6 +42,8 @@ brew install unzip
 brew install dmg2img
 ```
 
+## Dependencies Troubleshooting
+
 When the installation of Virtual Box fails, then refer to this guide to solve it:
 
 * Open [Apple Icon] >> System Preferences
@@ -49,6 +51,20 @@ When the installation of Virtual Box fails, then refer to this guide to solve it
 * Open "General" tab
 * Click on "Allow" that is presented next to the 'System software from developer "Oracle America, Inc"' was blocked
   from loading. 
+
+## Installation
+
+Run the following in terminal
+
+```shell
+bash macos-guest-virtualbox.sh
+```
+
+Follow the guide presented by the script by referring to what is happening on the screen of the VM.
+
+HINT: When the installation/setup is and you've set up everything in a way that you just see the normal MacOS desktop
+      and are able to interact with it, consider creating 'clean' snapshot of the VM that you could return to when you 
+      mess it up or just want to test something from the starting point of clean installation.     
 
 ## Remote Login
 
