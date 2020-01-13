@@ -11,7 +11,7 @@
 function set_variables() {
 # Customize the installation by setting these variables:
 vmname="macOS"                   # name of the VirtualBox virtual machine
-storagesize=25000                # VM disk image size in MB. minimum 22000
+storagesize=55000                # VM disk image size in MB. minimum 22000
 cpucount=2                       # VM CPU cores, minimum 2
 memorysize=4096                  # VM RAM in MB, minimum 2048
 gpuvram=128                      # VM video RAM in MB, minimum 34, maximum 128
